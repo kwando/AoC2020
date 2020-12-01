@@ -7,15 +7,22 @@ defmodule Aoc2020.Day01 do
       |> File.read!()
       |> String.split("\n", trim: true)
       |> Enum.map(&String.to_integer/1)
-      |> Enum.sort()
-      |> IO.inspect(label: "numbers")
 
     {a, b} = find_sum(numbers, 2020)
+
     IO.inspect(a: a, b: b, product: a * b)
   end
 
   def find_sum(numbers, sum) do
-    Stream.zip([numbers, Enum.reverse(numbers)])
-    |> Enum.find(fn {a, b} -> IO.inspect(a + b) === sum end)
+    existing_numers = MapSet.new(numbers)
+
+    number =
+      Enum.find(numbers, fn number ->
+        diff = sum - number
+
+        MapSet.member?(existing_numers, diff)
+      end)
+
+    {number, sum - number}
   end
 end
