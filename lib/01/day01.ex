@@ -9,40 +9,31 @@ defmodule Aoc2020.Day01 do
     IO.inspect(a: a, b: b, sum: a + b, product: a * b)
   end
 
-  def part2() do
-    numbers = read_numbers("lib/01/input.txt")
+  def part2(), do: part2(read_numbers("lib/01/input.txt"))
 
+  def part2(numbers) do
     sum = 2020
 
-    Enum.find(numbers, fn number ->
-      diff = sum - number
-      find_sum(numbers, diff)
-    end)
-    |> case do
-      nil ->
-        nil
+    a =
+      numbers
+      |> Enum.find(&find_sum(numbers, sum - &1))
 
-      a ->
-        {b, c} = find_sum(numbers, sum - a)
-        IO.inspect(a: a, b: b, c: c, sum: a + b + c, product: a * b * c)
-    end
+    {b, c} = find_sum(numbers, sum - a)
+
+    # IO.inspect(a: a, b: b, c: c, sum: a + b + c, product: a * b * c)
   end
 
+  @spec find_sum(MapSet.t(), number) :: nil | {number, number}
   def find_sum(numbers, sum) do
-    existing_numers = numbers
-
-    Enum.find(numbers, fn number ->
-      diff = sum - number
-
-      MapSet.member?(existing_numers, diff)
-    end)
+    numbers
+    |> Enum.find(&MapSet.member?(numbers, sum - &1))
     |> case do
       nil -> nil
       number -> {number, sum - number}
     end
   end
 
-  defp read_numbers(path) do
+  def read_numbers(path) do
     path
     |> File.read!()
     |> String.split("\n", trim: true)
