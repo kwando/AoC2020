@@ -24,8 +24,7 @@ defmodule Aoc2020.Day03 do
     |> Enum.reduce({0, 0}, fn
       row, {trees, shift} ->
         row
-        |> Stream.drop(shift)
-        |> Enum.at(0)
+        |> Enum.at(shift)
         |> case do
           ?. ->
             {trees, shift + dx}
