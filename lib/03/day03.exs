@@ -1,15 +1,4 @@
 defmodule Aoc2020.Day03 do
-  def input_stream(path) do
-    File.stream!(path)
-    |> Stream.map(&parse/1)
-  end
-
-  defp parse(line) do
-    line
-    |> String.trim()
-    |> String.codepoints()
-  end
-
   def part1(input) do
     count_trees(input, {3, 1})
   end
@@ -36,16 +25,27 @@ defmodule Aoc2020.Day03 do
       row, {trees, shift} ->
         row
         |> Stream.drop(shift)
-        |> Enum.take(1)
+        |> Enum.at(0)
         |> case do
-          ["."] ->
+          ?. ->
             {trees, shift + dx}
 
-          ["#"] ->
+          ?# ->
             {trees + 1, shift + dx}
         end
     end)
     |> elem(0)
+  end
+
+  def input_stream(path) do
+    File.stream!(path)
+    |> Stream.map(&parse/1)
+  end
+
+  defp parse(line) do
+    line
+    |> String.trim()
+    |> String.to_charlist()
   end
 end
 
