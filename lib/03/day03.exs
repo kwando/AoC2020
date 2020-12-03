@@ -11,7 +11,7 @@ defmodule Aoc2020.Day03 do
   end
 
   def part1(input) do
-    count_trees(input, 3)
+    count_trees(input, {3, 1})
   end
 
   def part2(input) do
@@ -23,13 +23,14 @@ defmodule Aoc2020.Day03 do
       {1, 2}
     ]
 
-    for {dx, dy} <- slopes do
-      count_trees(input, dx)
+    for slope <- slopes, reduce: 1 do
+      product -> product * count_trees(input, slope)
     end
   end
 
-  def count_trees(input, shift_amount) do
+  def count_trees(input, {dx, dy}) do
     input
+    |> Stream.take_every(dy)
     |> Stream.map(&Stream.cycle/1)
     |> Enum.reduce({0, 0}, fn
       row, {trees, shift} ->
@@ -38,17 +39,17 @@ defmodule Aoc2020.Day03 do
         |> Enum.take(1)
         |> case do
           ["."] ->
-            {trees, shift + shift_amount}
+            {trees, shift + dx}
 
           ["#"] ->
-            {trees + 1, shift + shift_amount}
+            {trees + 1, shift + dx}
         end
     end)
     |> elem(0)
   end
 end
 
-input = Aoc2020.Day03.input_stream("example.txt")
+input = Aoc2020.Day03.input_stream("input.txt")
 
 input
 |> Aoc2020.Day03.part1()
