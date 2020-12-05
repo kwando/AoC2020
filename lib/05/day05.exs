@@ -13,8 +13,8 @@ defmodule Aoc2020.Day05 do
     |> find_gap()
   end
 
-  def find_gap([a, b | rest]) when b - a == 2, do: a + 1
-  def find_gap([a, b | rest]) when b - a == 1, do: find_gap([b | rest])
+  def find_gap([a, b | _]) when b - a == 2, do: a + 1
+  def find_gap([a | [b | _] = rest]) when b - a == 1, do: find_gap(rest)
 
   def seat_id(spec) when is_binary(spec) do
     {rows, cols} = String.split_at(spec, 7)
@@ -25,15 +25,17 @@ defmodule Aoc2020.Day05 do
     row * 8 + col
   end
 
-  def decode(<<lft>>, lft, _rgt, {min, _max}), do: min
-  def decode(<<rgt>>, _lft, rgt, {_min, max}), do: max
+  def decode(<<lo>>, lo, _rgt, {min, _max}), do: min
+  def decode(<<hi>>, _lft, hi, {_min, max}), do: max
 
-  def decode(<<lft, rest::binary()>>, lft, rgt, {min, max}),
-    do: decode(rest, lft, rgt, {min, max - mid(min, max)})
+  def decode(<<lo, rest::binary()>>, lo, hi, bound),
+    do: decode(rest, lo, hi, lower(bound))
 
-  def decode(<<rgt, rest::binary()>>, lft, rgt, {min, max}),
-    do: decode(rest, lft, rgt, {min + mid(min, max), max})
+  def decode(<<hi, rest::binary()>>, lo, hi, bound),
+    do: decode(rest, lo, hi, upper(bound))
 
+  defp upper({min, max}), do: {min + mid(min, max), max}
+  defp lower({min, max}), do: {min, max - mid(min, max)}
   defp mid(min, max), do: div(max - min, 2) + 1
 
   def input_stream(path) do
