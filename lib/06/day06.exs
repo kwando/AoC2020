@@ -25,11 +25,9 @@ defmodule Aoc2020.Day06 do
     |> count_bits()
   end
 
-  defp count_bits(number) do
-    number
-    |> Integer.digits(2)
-    |> Enum.sum()
-  end
+  def count_bits(num), do: count_bits(num, 0)
+  defp count_bits(0, sum), do: sum
+  defp count_bits(num, sum), do: count_bits(num &&& num - 1, sum + 1)
 
   def input_stream(path) do
     chunk_fun = fn
