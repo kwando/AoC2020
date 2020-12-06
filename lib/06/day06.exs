@@ -13,22 +13,16 @@ defmodule Aoc2020.Day06 do
     |> Enum.sum()
   end
 
-  defp count_uniq([member | group]) do
-    count_uniq(group, member)
+  defp count_uniq(group) do
+    group
+    |> Enum.reduce(0, fn member, acc -> acc ||| member end)
+    |> count_bits()
   end
 
-  defp count_uniq([], value), do: count_bits(value)
-
-  defp count_uniq([member | group], value) do
-    count_uniq(group, member ||| value)
-  end
-
-  defp count_common([member | rest]), do: count_common(rest, member)
-
-  defp count_common([], value), do: count_bits(value)
-
-  defp count_common([member | group], value) do
-    count_common(group, member &&& value)
+  defp count_common(group) do
+    group
+    |> Enum.reduce(fn member, acc -> acc &&& member end)
+    |> count_bits()
   end
 
   defp count_bits(number) do
@@ -56,7 +50,7 @@ defmodule Aoc2020.Day06 do
   def encode(<<char, rest::binary()>>), do: 0b1 <<< (char - ?a) ||| encode(rest)
 end
 
-input = Aoc2020.Day06.input_stream("example.txt")
+input = Aoc2020.Day06.input_stream("input.txt")
 
 Aoc2020.Day06.part1(input)
 |> IO.inspect(label: "part1")
