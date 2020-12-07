@@ -12,9 +12,15 @@ defmodule Aoc2020.Day07 do
           list
         end
     end
-    |> IO.inspect(label: "hello")
-    |> Enum.uniq()
     |> Enum.count()
+  end
+
+  def part2(input) do
+    rules =
+      input
+      |> Enum.into(%{})
+
+    count_bags(rules, "shiny gold") - 1
   end
 
   def find(rules, [], _), do: false
@@ -23,16 +29,12 @@ defmodule Aoc2020.Day07 do
   def find(rules, [{_, child_color} | rest], color),
     do: find(rules, rest, color) || find(rules, Map.get(rules, child_color, []), color)
 
-  def leafs_for(tree, color, result) do
-    Map.get(tree, color, [])
-    |> case do
-      [] ->
-        [color | result]
+  def count_bags(rules, color) do
+    specs = Map.get(rules, color, [])
 
-      colors ->
-        Enum.reduce(colors, result, fn c, result ->
-          leafs_for(tree, color, result)
-        end)
+    for {quantity, color} <- specs, reduce: 1 do
+      sum ->
+        sum + quantity * count_bags(rules, color)
     end
   end
 
@@ -67,3 +69,6 @@ input = Aoc2020.Day07.input_stream("input.txt")
 
 Aoc2020.Day07.part1(input)
 |> IO.inspect(label: "part1")
+
+Aoc2020.Day07.part2(input)
+|> IO.inspect(label: "part2")
