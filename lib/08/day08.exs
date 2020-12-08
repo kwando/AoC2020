@@ -19,7 +19,7 @@ defmodule Aoc2020.Day08 do
     case run_program(modified) do
       {:crash, _} ->
         case original[address] do
-          {"acc", _} ->
+          {:acc, _} ->
             fix_program(original, address + 1, original)
 
           instruction ->
@@ -31,8 +31,8 @@ defmodule Aoc2020.Day08 do
     end
   end
 
-  defp swap({"jmp", value}), do: {"nop", value}
-  defp swap({"nop", value}), do: {"jmp", value}
+  defp swap({:jmp, value}), do: {:nop, value}
+  defp swap({:nop, value}), do: {:jmp, value}
 
   def run_program(program) do
     run_program(program, {0, 0, MapSet.new()})
@@ -53,9 +53,9 @@ defmodule Aoc2020.Day08 do
     end
   end
 
-  def execute({pc, acc}, {"nop", _}), do: {pc + 1, acc}
-  def execute({pc, acc}, {"acc", value}), do: {pc + 1, acc + value}
-  def execute({pc, acc}, {"jmp", offset}), do: {pc + offset, acc}
+  def execute({pc, acc}, {:nop, _}), do: {pc + 1, acc}
+  def execute({pc, acc}, {:acc, value}), do: {pc + 1, acc + value}
+  def execute({pc, acc}, {:jmp, offset}), do: {pc + offset, acc}
 
   def input_stream(path) do
     File.stream!(path)
@@ -69,7 +69,7 @@ defmodule Aoc2020.Day08 do
       |> String.trim()
       |> String.split(" ", parts: 2)
 
-    {index, {instruction, String.to_integer(number)}}
+    {index, {String.to_existing_atom(instruction), String.to_integer(number)}}
   end
 end
 
