@@ -4,15 +4,14 @@ defmodule Aoc2020.Day07 do
       input
       |> Enum.into(%{})
 
-    for {color, specs} <- rules, color != "shiny gold", reduce: [] do
-      list ->
+    for {color, specs} <- rules, color != "shiny gold", reduce: 0 do
+      sum ->
         if find(rules, specs, "shiny gold") do
-          [color | list]
+          sum + 1
         else
-          list
+          sum
         end
     end
-    |> Enum.count()
   end
 
   def part2(input) do
