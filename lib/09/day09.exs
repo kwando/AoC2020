@@ -26,28 +26,22 @@ defmodule Aoc2020.Day09 do
   end
 
   defp find_contiguous(numbers, value) do
-    case find_range(numbers, value, 0) do
+    case find_range(numbers, value) do
       false ->
         find_contiguous(Enum.drop(numbers, 1), value)
 
-      len ->
-        {min, max} =
-          numbers
-          |> Enum.take(len)
-          |> Enum.reduce({hd(numbers), hd(numbers)}, fn num, {min, max} ->
-            {min(min, num), max(max, num)}
-          end)
-
+      {min, max} ->
         min + max
     end
   end
 
+  defp find_range([first | _] = numbers, value), do: find_range(numbers, {value, first, first}, 0)
   defp find_range([], _, _), do: false
-  defp find_range(_, value, _) when value < 0, do: false
-  defp find_range(_, 0, n), do: n
+  defp find_range(_, {value, _, _}, _) when value < 0, do: false
+  defp find_range(_, {0, min, max}, n), do: {min, max}
 
-  defp find_range([number | numbers], value, n) do
-    find_range(numbers, value - number, n + 1)
+  defp find_range([number | numbers], {value, min, max}, n) do
+    find_range(numbers, {value - number, min(min, number), max(max, number)}, n + 1)
   end
 
   defp check_number(_, [], 0), do: false
