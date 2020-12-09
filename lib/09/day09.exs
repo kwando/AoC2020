@@ -17,6 +17,38 @@ defmodule Aoc2020.Day09 do
     end
     |> elem(0)
     |> Enum.find(&match?({_, false}, &1))
+    |> elem(0)
+  end
+
+  def part2({input, _}, value) do
+    numbers = Enum.to_list(input)
+    find_contiguous(numbers, value)
+  end
+
+  defp find_contiguous(numbers, value) do
+    case find_range(numbers, value, 0) do
+      false ->
+        find_contiguous(Enum.drop(numbers, 1), value)
+
+      len ->
+        {min, max} =
+          numbers
+          |> Enum.take(len)
+          |> Enum.reduce({hd(numbers), hd(numbers)}, fn num, {min, max} ->
+            {min(min, num), max(max, num)}
+          end)
+
+        min + max
+    end
+  end
+
+  defp find_range([], _, _), do: false
+  defp find_range(_, value, _) when value < 0, do: false
+
+  defp find_range([value | _], value, n), do: n + 1
+
+  defp find_range([number | numbers], value, n) do
+    find_range(numbers, value - number, n + 1)
   end
 
   defp check_number(_, [], 0), do: false
@@ -43,5 +75,9 @@ end
 
 input = Aoc2020.Day09.input_stream("input.txt", 25)
 
-Aoc2020.Day09.part1(input)
-|> IO.inspect(label: "part1")
+sum =
+  Aoc2020.Day09.part1(input)
+  |> IO.inspect(label: "part1")
+
+Aoc2020.Day09.part2(input, sum)
+|> IO.inspect(label: "part2")
