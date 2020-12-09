@@ -44,8 +44,7 @@ defmodule Aoc2020.Day09 do
 
   defp find_range([], _, _), do: false
   defp find_range(_, value, _) when value < 0, do: false
-
-  defp find_range([value | _], value, n), do: n + 1
+  defp find_range(_, 0, n), do: n
 
   defp find_range([number | numbers], value, n) do
     find_range(numbers, value - number, n + 1)
@@ -73,7 +72,7 @@ defmodule Aoc2020.Day09 do
   end
 end
 
-input = Aoc2020.Day09.input_stream("input.txt", 25)
+input = Aoc2020.Day09.input_stream("example.txt", 5)
 
 sum =
   Aoc2020.Day09.part1(input)
