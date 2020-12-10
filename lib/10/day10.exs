@@ -48,8 +48,6 @@ defmodule Aoc2020.Day10 do
   def count_paths(_, from, to, sum, _) when from < to, do: sum
 
   def count_paths(graph, from, to, sum, cache) do
-    # IO.inspect(from: from, to: to)
-    # Process.sleep(500)
     for node <- graph[from], reduce: sum do
       sum ->
         case Map.fetch(cache, node) do
