@@ -7,19 +7,26 @@ defmodule Aoc2020.Day10 do
       numbers
       |> differences()
       |> Enum.frequencies()
-      |> IO.inspect()
 
     diffs[1] * diffs[3]
   end
 
   def part2(numbers) do
     numbers = Enum.sort([0 | Enum.to_list(numbers)], :desc)
-
     computer_joltage = hd(numbers) + 3
+    sequence = [computer_joltage | numbers]
 
-    graph = build_graph([computer_joltage | numbers])
+    graph = build_graph(sequence)
+    rev_seq = Enum.reverse(sequence)
 
-    count_paths(graph, computer_joltage, 0, 0)
+    for number <- Enum.drop(rev_seq, 0), reduce: %{} do
+      cache ->
+        count = count_paths(graph, number, 0, 0, cache)
+
+        cache
+        |> Map.put(number, count)
+    end
+    |> Map.get(computer_joltage)
   end
 
   def differences([a]), do: [a]
@@ -37,12 +44,18 @@ defmodule Aoc2020.Day10 do
     |> elem(0)
   end
 
-  def count_paths(_, to, to, sum), do: sum + 1
+  def count_paths(_, to, to, sum, _), do: sum + 1
+  def count_paths(_, from, to, sum, _) when from < to, do: sum
 
-  def count_paths(graph, from, to, sum) do
+  def count_paths(graph, from, to, sum, cache) do
+    # IO.inspect(from: from, to: to)
+    # Process.sleep(500)
     for node <- graph[from], reduce: sum do
       sum ->
-        count_paths(graph, node, to, sum)
+        case Map.fetch(cache, node) do
+          {:ok, value} -> sum + value
+          :error -> count_paths(graph, node, to, sum, cache)
+        end
     end
   end
 
