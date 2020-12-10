@@ -7,6 +7,7 @@ defmodule Aoc2020.Day10 do
       numbers
       |> differences()
       |> Enum.frequencies()
+      |> IO.inspect()
 
     diffs[1] * diffs[3]
   end
@@ -16,11 +17,9 @@ defmodule Aoc2020.Day10 do
 
     computer_joltage = hd(numbers) + 3
 
-    graph =
-      build_graph([computer_joltage | numbers])
-      |> IO.inspect()
+    graph = build_graph([computer_joltage | numbers])
 
-    count_paths(graph, computer_joltage, 0)
+    count_paths(graph, computer_joltage, 0, 0)
   end
 
   def differences([a]), do: [a]
@@ -38,12 +37,12 @@ defmodule Aoc2020.Day10 do
     |> elem(0)
   end
 
-  def count_paths(_, to, to), do: 1
+  def count_paths(_, to, to, sum), do: sum + 1
 
-  def count_paths(graph, from, to) do
-    for node <- graph[from], reduce: 0 do
+  def count_paths(graph, from, to, sum) do
+    for node <- graph[from], reduce: sum do
       sum ->
-        sum + count_paths(graph, node, to)
+        count_paths(graph, node, to, sum)
     end
   end
 
